@@ -8,17 +8,17 @@ const app = express();
 app.use(cors());
 const PORT = 8080;
 var admin = require("firebase-admin");
-const path = require('path');
+const path = require("path");
 
 // ObjectOriented utilities
-const SkipTheCourrier = require('./src/controller/SkipTheCourrier');
-const UserCatalog = require('./src/catalogs/UserCatalog');
-const QuotationCatalog = require('./src/catalogs/QuotationCatalog');
-const PackageCatalog = require('./src/catalogs/PackageCatalog');
-const Size = require('./src/models/Size');
-const Weight = require('./src/models/Weight');
-const Package = require('./src/models/Package');
-const Address = require('./src/models/Address');
+const SkipTheCourrier = require("./src/controller/SkipTheCourrier");
+const UserCatalog = require("./src/catalogs/UserCatalog");
+const QuotationCatalog = require("./src/catalogs/QuotationCatalog");
+const PackageCatalog = require("./src/catalogs/PackageCatalog");
+const Size = require("./src/models/Size");
+const Weight = require("./src/models/Weight");
+const Package = require("./src/models/Package");
+const Address = require("./src/models/Address");
 
 const skipTheCourrier = SkipTheCourrier.getInstance();
 const userCatalog = UserCatalog.getInstance();
@@ -51,7 +51,7 @@ app.listen(process.env.PORT || PORT, () => {
 app.use(express.json()); // or app.use(bodyParser.json()); for older versions of Express
 
 // Serve static files from the Cocomelon directory
-app.use(express.static(path.join(__dirname, '..', '/')));
+app.use(express.static(path.join(__dirname, "..", "/")));
 
 function parseJSONOrString(input) {
   if (typeof input === "string") {
@@ -64,54 +64,54 @@ function parseJSONOrString(input) {
   return input; // Return as-is if it's already a parsed object
 }
 
-app.get('/signUp', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'Signup.html'));
+app.get("/signUp", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "Signup.html"));
 });
 
 // post http://localhost:8080/signUp with body {idToken: <idToken>, accountType: <accountType>}
 app.post("/signUp", async (req, res) => {
   try {
-      const { idToken, accountType } = req.body;
-      if (!idToken || !accountType) {
-          return res.status(400).send("Missing required fields");
-      }
+    const { idToken, accountType } = req.body;
+    if (!idToken || !accountType) {
+      return res.status(400).send("Missing required fields");
+    }
 
-      const newUser = await userCatalog.addUser(idToken, accountType);
-      res.status(200).send({
-          message: "User signed up successfully",
-          userId: newUser.getID(),
-          accountType: newUser.getType()
-      });
+    const newUser = await userCatalog.addUser(idToken, accountType);
+    res.status(200).send({
+      message: "User signed up successfully",
+      userId: newUser.getID(),
+      accountType: newUser.getType(),
+    });
   } catch (error) {
-      console.error("Sign Up Error:", error.message);
-      res.status(500).send("Error during sign up: " + error.message);
+    console.error("Sign Up Error:", error.message);
+    res.status(500).send("Error during sign up: " + error.message);
   }
 });
 
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'Loginpage.html'));
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "Loginpage.html"));
 });
 
 app.post("/login", async (req, res) => {
   try {
-      const { idToken } = req.body;
-      if (!idToken) {
-          return res.status(400).send("No idToken provided");
-      }
+    const { idToken } = req.body;
+    if (!idToken) {
+      return res.status(400).send("No idToken provided");
+    }
 
-      const userValues = await userCatalog.loginUser(idToken);
-      res.status(200).send({
-          message: "User logged in successfully",
-          userValues: userValues
-      });
+    const userValues = await userCatalog.loginUser(idToken);
+    res.status(200).send({
+      message: "User logged in successfully",
+      userValues: userValues,
+    });
   } catch (error) {
-      console.error("Login Error:", error.message);
-      res.status(500).send("Error during login: " + error.message);
+    console.error("Login Error:", error.message);
+    res.status(500).send("Error during login: " + error.message);
   }
 });
 
-app.get('/requestForDelivery', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'Requestdelivery.html'));
+app.get("/requestForDelivery", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "Requestdelivery.html"));
 });
 
 app.post("/requestForDelivery", (req, response) => {
