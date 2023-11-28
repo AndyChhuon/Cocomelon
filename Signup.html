@@ -43,9 +43,9 @@
                 <label for="">Password</label>
                 <div class="input">
                   <input
-                    type="text"
                     placeholder="Enter your password"
                     id="password"
+                    type="password"
                   />
                   <i class="ri-lock-line"></i>
                 </div>
@@ -54,17 +54,24 @@
                 <label for="">Confirm Password</label>
                 <div class="input">
                   <input
-                    type="text"
                     placeholder="Confirm your password"
                     id="confirmPassword"
+                    type="password"
                   />
                   <i class="ri-lock-line"></i>
                 </div>
               </div>
+              <div class="items">
+                <label for="">AccountType</label>
+                <div class="input">
+                  <select name="accountType" id="accountType">
+                    <option value="client">client</option>
+                    <option value="deliverer">deliverer</option>
+                  </select>
+                </div>
+              </div>
               <div class="form-signin">
-                <button class="btn" id="signupButton" onclick="signUp()">
-                  Signup Now
-                </button>
+                <button class="btn" id="signupButton">Signup Now</button>
               </div>
               <div class="or-option">
                 <p>or</p>
@@ -84,7 +91,6 @@
     </div>
   </body>
   <script type="module">
-    // TODO: Confirmation/error modal for all firebase error messages (ex: incorrect password if less than 6 characters, user already signed up, etc.)
     // Note: User will be seen in firebase authentication page
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
@@ -113,22 +119,78 @@
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const confirmPassword = document.getElementById("confirmPassword").value;
+      const accountType = document.getElementById("accountType").value;
       console.log(email);
       console.log(password);
       console.log(confirmPassword);
+      console.log(accountType);
+
+      if (!email) {
+        alert("Please enter email");
+        return;
+      }
+
       if (password && password == confirmPassword) {
         createUserWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
             // Signed in
             const user = userCredential.user;
-            // Pass in accessToken to backend
-            console.log(user);
+            // Store accesstoken as cookie
+            const accessToken = user.accessToken;
+            const now = new Date();
+            var time = now.getTime();
+            time += 3600 * 1000;
+            now.setTime(time);
+            document.cookie =
+              "tokenId=" +
+              accessToken +
+              "; expires=" +
+              now.toUTCString() +
+              "; path=/";
             console.log("Signed Up");
-            // ...
+            // Call backend to add user to database
+            const url = "http://localhost:8080/signUp";
+            var params = {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                idToken: accessToken,
+                accountType: accountType,
+              }),
+            };
+
+            fetch(url, params)
+              .then((response) => {
+                if (response.ok) {
+                  response.json().then((res) => {
+                    // signed in. Redirect to request deliver page and set accountType cookie
+                    document.cookie =
+                      "accountType=" +
+                      accountType +
+                      "; expires=" +
+                      now.toUTCString() +
+                      "; path=/";
+                    console.log(res);
+                    window.location.href = "Requestdelivery.html";
+                  });
+                } else {
+                  response.text().then((text) => {
+                    alert(text);
+                  });
+                }
+              })
+              .catch((error) => {
+                // Handle errors here
+                alert(error);
+                console.error("Error:", error);
+              });
           })
           .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
+            alert(errorMessage);
             console.log(errorCode);
             console.log(errorMessage);
             console.log("Error");
@@ -136,6 +198,7 @@
           });
       } else {
         console.log("Password does not match");
+        alert("Password does not match");
       }
     }
 

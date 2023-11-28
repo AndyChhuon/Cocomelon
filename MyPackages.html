@@ -44,16 +44,17 @@
     <div id="header"></div>
 
     <div class="container mt-5">
-      <h1 class="mb-5">Track Your Courier</h1>
+      <h1 class="mb-5">Packages To Deliver</h1>
       <div class="mt-5">
-        <h3>Packages</h3>
+        <h3>My Packages</h3>
         <table class="table">
           <thead>
             <tr>
-              <th scope="col">#</th>
-              <th scope="col">Date & Time</th>
-              <th scope="col">Location</th>
+              <th scope="col">Id</th>
+              <th scope="col">Location From</th>
+              <th scope="col">Location To</th>
               <th scope="col">Status</th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody id="table_body"></tbody>
@@ -155,7 +156,47 @@
     }
     const tokenId = obtainCookie("tokenId");
 
-    const url = "http://localhost:8080/getRequests";
+    function onClick(id) {
+      if (tokenId == null) {
+        window.location.href = "Loginpage.html";
+      } else {
+        // call request delivery backend
+        const url = "http://localhost:8080/updateStatus";
+        const newStatus = document.getElementById("statusSelect" + id).value;
+
+        var params = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            idToken: tokenId,
+            deliveryId: id,
+            newStatus: newStatus,
+          }),
+        };
+        fetch(url, params)
+          .then((response) => {
+            if (response.ok) {
+              response.json().then((res) => {
+                console.log(res);
+                window.location.href = "MyPackages.html";
+              });
+            } else {
+              response.text().then((text) => {
+                alert(text);
+              });
+            }
+          })
+          .catch((error) => {
+            // Handle errors here
+            alert(error);
+            console.error("Error:", error);
+          });
+      }
+    }
+
+    const url = "http://localhost:8080/getDeliveries";
 
     var params = {
       method: "POST",
@@ -166,6 +207,13 @@
         idToken: tokenId,
       }),
     };
+    const statusOptions = [
+      "pending",
+      "in progress",
+      "in transit",
+      "delivered",
+      "cancelled",
+    ];
 
     fetch(url, params)
       .then((response) => {
@@ -174,19 +222,40 @@
             console.log(res);
             // populate html table with data
             const table = document.querySelector("tbody");
-            const requests = res.requests;
-            for (let key in requests) {
-              if (requests.hasOwnProperty(key)) {
+            const deliveries = res.deliveries;
+            for (let key in deliveries) {
+              if (deliveries.hasOwnProperty(key)) {
+                const selectedStatus = deliveries[key].status;
+                const selectHtml =
+                  "<select id='statusSelect" +
+                  key +
+                  "'>" +
+                  statusOptions
+                    .map(
+                      (status) =>
+                        "<option value='" +
+                        status +
+                        "' " +
+                        (status == selectedStatus ? "selected" : "") +
+                        ">" +
+                        status +
+                        "</option>"
+                    )
+                    .join("") +
+                  "</select>";
+
                 document.getElementById("table_body").innerHTML +=
                   "<tr><th scope='row'>" +
                   key +
                   "</th><td>" +
-                  requests[key]?.requestJson?.locationFrom +
+                  deliveries[key]?.requestJson?.locationFrom +
                   "</td><td>" +
-                  requests[key]?.requestJson?.locationTo +
+                  deliveries[key]?.requestJson?.locationTo +
                   "</td><td>" +
-                  requests[key].status +
-                  "</td>";
+                  selectHtml +
+                  "</td><td><button type='button' class='btn btn-primary' onclick='onClick(\"" +
+                  key +
+                  "\")'>Update</button></td></tr>";
               }
             }
           });

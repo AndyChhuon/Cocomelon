@@ -68,7 +68,6 @@
       <div class="col-md-auto">
 
 
-        <form>
           <div class="form-group body-regular-2">
             <h2>Origin and Destination</h2>
             <label for="origin">Origin</label>
@@ -83,9 +82,8 @@
             <input type="text" class="form-control" id="dimensions" placeholder="Height(cm) x Width(cm) x Length(cm)">
           </div>
           <div class="calculate">
-            <button type="submit" class="calculate-button rounded mt-5">Calculate</button>
+            <button type="submit" id="quotaButton" class="calculate-button rounded mt-5">Calculate</button>
           </div>
-        </form>
       </div>
       <div class="col col-lg-4"></div>
     </div>
@@ -105,7 +103,47 @@
       $("#footer").load("footer.html");
     });
   </script>
+  <script>
+    document.getElementById("quotaButton").addEventListener("click",getPrice);
+    function getPrice(){
+      var weightOfPackage = parseInt(document.getElementById("weight").value)
+      var dimensionOfPackage = parseInt(document.getElementById("dimensions").value) 
+      var destinationOfPackage = document.getElementById("destination").value
+      // if destinationOfPackage == 
+      // console.log(weightOfPackage+dimensionOfPackage);
+      // console.log(dimensionOfPackage);
+      const url = "http://localhost:8080/quotationPrice";
 
+      var params = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+            weightOfPackage : weightOfPackage,
+            dimensionOfPackage : dimensionOfPackage,
+            destinationOfPackage :destinationOfPackage,
+            }),
+          };
+          fetch(url, params)
+            .then((response) => {
+              if (response.ok) {
+                response.json().then((res) => {
+                  alert(res.price)
+                });
+              } else {
+                response.text().then((text) => {
+                  alert(text);
+                });
+              }
+            })
+            .catch((error) => {
+              // Handle errors here
+              alert(error);
+              console.error("Error:", error);
+            });
+    }
+  </script>
 </body>
 
 </html>

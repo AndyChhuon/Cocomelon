@@ -1,50 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Page</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="icon" href="navbar.png" type="image/x-icon" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="constants.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Page</title>
-  <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link rel="icon" href="navbar.png" type="image/x-icon">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="constants.css">
-
-</head>
-
-<body>
-  <div id="header"></div>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-    $(function () {
-      $("#header").load("index.html");
-    });
-  </script>
-  <div class="section login-page container-fluid">
-    <div class="row aligh-item-center">
-      <div class="col-sm-3 p-0">
-        <div class="login-form">
-          <div class="logo">
-
-          </div>
-          <div class="page-heading">
-            <h2>Login into your account</h2>
-          </div>
-          <form action="">
+  <body>
+    <div id="header"></div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(function () {
+        $("#header").load("index.html");
+      });
+    </script>
+    <div class="section login-page container-fluid">
+      <div class="row aligh-item-center">
+        <div class="col-sm-3 p-0">
+          <div class="login-form">
+            <div class="logo"></div>
+            <div class="page-heading">
+              <h2>Login into your account</h2>
+            </div>
             <div class="login-form-items">
               <div class="items">
                 <label for="">Email Address</label>
                 <div class="input">
-                  <input type="text" placeholder="Email Address">
+                  <input type="text" placeholder="Email Address" id="email" />
                   <i class="ri-mail-line"></i>
                 </div>
               </div>
               <div class="items">
                 <label for="">Password</label>
                 <div class="input">
-                  <input type="text" placeholder="Enter your password">
+                  <input
+                    type="password"
+                    placeholder="Enter your password"
+                    id="password"
+                  />
                   <i class="ri-lock-line"></i>
                 </div>
               </div>
@@ -52,7 +54,7 @@
                 <a href="">Forgot Password?</a>
               </div>
               <div class="form-signin">
-                <button class="btn">Login Now</button>
+                <button class="btn" id="loginButton">Login Now</button>
               </div>
               <div class="or-option">
                 <p>or</p>
@@ -61,17 +63,124 @@
                 <a class="btn" href="Signup.html">Signup Now</a>
               </div>
             </div>
-          </form>
+          </div>
         </div>
-      </div>
-      <div class="col-sm-9">
-        <div class="login-extra">
-          <img src="https://svgshare.com/i/nDi.svg" alt="">
+        <div class="col-sm-9">
+          <div class="login-extra">
+            <img src="https://svgshare.com/i/nDi.svg" alt="" />
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </body>
+  <script type="module">
+    // Note: User will be seen in firebase authentication page
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      sendPasswordResetEmail,
+    } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
 
-</body>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAufNUiY75mPGp9MYRYl0NUyCife5Nl_PM",
+      authDomain: "cocomelon-630ed.firebaseapp.com",
+      projectId: "cocomelon-630ed",
+      storageBucket: "cocomelon-630ed.appspot.com",
+      messagingSenderId: "513558801256",
+      appId: "1:513558801256:web:43c06e9f08f866464e84dd",
+      measurementId: "G-HPDJG68XPZ",
+    };
 
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+
+    function signin() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      console.log(email);
+      console.log(password);
+      if (password && email) {
+        signInWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            // Signed in
+            const user = userCredential.user;
+            // Store accesstoken as cookie
+            const accessToken = user.accessToken;
+            const now = new Date();
+            var time = now.getTime();
+            time += 3600 * 1000;
+            now.setTime(time);
+            document.cookie =
+              "tokenId=" +
+              accessToken +
+              "; expires=" +
+              now.toUTCString() +
+              "; path=/";
+            console.log("Signed in");
+            // Call backend to add user to database
+            const url = "http://localhost:8080/login";
+            var params = {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                idToken: accessToken,
+              }),
+            };
+
+            fetch(url, params)
+              .then((response) => {
+                if (response.ok) {
+                  response.json().then((res) => {
+                    // signed in. Redirect to request deliver page and set accountType cookie
+                    console.log(res);
+                    const accountType = res.userValues.accountType;
+                    console.log(accountType);
+                    document.cookie =
+                      "accountType=" +
+                      accountType +
+                      "; expires=" +
+                      now.toUTCString() +
+                      "; path=/";
+                    +"; path=/";
+                    if (accountType == "client") {
+                      window.location.href = "Requestdelivery.html";
+                    } else {
+                      window.location.href = "Trackorderpages.html";
+                    }
+                  });
+                } else {
+                  response.text().then((text) => {
+                    alert(text);
+                  });
+                }
+              })
+              .catch((error) => {
+                // Handle errors here
+                alert(error);
+                console.error("Error:", error);
+              });
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            alert(errorMessage);
+            console.log(errorCode);
+            console.log(errorMessage);
+            console.log("Error");
+            // ..
+          });
+      } else {
+        alert("Please input email and password");
+      }
+    }
+
+    document.getElementById("loginButton").addEventListener("click", signin);
+  </script>
 </html>

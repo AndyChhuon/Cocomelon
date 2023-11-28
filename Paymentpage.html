@@ -65,7 +65,7 @@
             <input type="text" class="form-control" id="cvv" required>
           </div>
 
-          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="submit" class="btn btn-primary" id="submit-button">Submit</button>
         </form>
       </div>
     </div>
@@ -87,6 +87,73 @@
 <script>
   $(function () {
     $("#footer").load("footer.html");
+  });
+</script>
+<script>
+  function obtainCookie(name) {
+    // Add the = sign
+    name = name + "=";
+
+    // Get the decoded cookie
+    var decodedCookie = decodeURIComponent(document.cookie);
+
+    // Get all cookies, split on ; sign
+    var cookies = decodedCookie.split(";");
+
+    // Loop over the cookies
+    for (var i = 0; i < cookies.length; i++) {
+      // Define the single cookie, and remove whitespace
+      var cookie = cookies[i].trim();
+
+      // If this cookie has the name of what we are searching
+      if (cookie.indexOf(name) == 0) {
+        // Return everything after the cookies name
+        return cookie.substring(name.length, cookie.length);
+      }
+    }
+  }
+
+  document.getElementById("submit-button").addEventListener("click", () => {
+    const tokenId = obtainCookie("tokenId");
+    if (tokenId == null) {
+      window.location.href = "Loginpage.html";
+    } else {
+      // call request delivery backend
+      const url = "http://localhost:8080/creditCardPayment";
+      const creditCardInfo = {
+        // TODO: get values from form
+        test:"test"
+      };
+      var params = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          idToken: tokenId,
+          creditCardInfo: creditCardInfo,
+          requestPrice: 10,
+        }),
+      };
+      fetch(url, params)
+        .then((response) => {
+          if (response.ok) {
+            response.json().then((res) => {
+              // Redirect to payment page
+              alert("Payment successful");
+            });
+          } else {
+            response.text().then((text) => {
+              alert(text);
+            });
+          }
+        })
+        .catch((error) => {
+          // Handle errors here
+          alert(error);
+          console.error("Error:", error);
+        });
+    }
   });
 </script>
 
