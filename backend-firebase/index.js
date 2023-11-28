@@ -546,27 +546,27 @@ app.post("/getRequests", (req, response) => {
 });
 
 app.post("/quotationPrice", (req, response) => {
-  try {
-    // Extract package and destination details
-    const { lengthCm, widthCm, heightCm, weightKg, source, destination } = req.body;
-
-    // Validate input
-    if (!lengthCm || !widthCm || !heightCm || !weightKg || !source || !destination) {
-      return response.status(400).send("Missing required details");
-    }
-
-    // Request quotation proposal
-    const quotation = SkipTheCourrier.requestQuotationProposal(lengthCm, widthCm, heightCm, weightKg, source, destination);
-
-    // Assuming getTotal() calculates and returns the price
-    const price = quotation.getTotal();
-
-    // Send response
-    response.status(200).json({ price: price });
-  } catch (error) {
-    // Error handling
-    response.status(500).send("Error processing quotation: " + error.message);
+  if (!req.body.weightOfPackage) {
+    response.status(400).send("No weight of package provided");
+    return;
   }
+  if (!req.body.dimensionOfPackage) {
+    response.status(400).send("No dimension of package provided");
+    return;
+  }
+  if (!req.body.destinationOfPackage) {
+    response.status(400).send("No destination of package provided");
+    return;
+  }
+  var weightOfPackage = parseInt(req.body.weightOfPackage);
+  var dimensionOfPackage = parseInt(req.body.dimensionOfPackage);
+  var destinationOfPackage = req.body.destinationOfPackage;
+  var price;
+  if (destinationOfPackage.toLowerCase() == "canada")
+    price = weightOfPackage + dimensionOfPackage;
+  else price = (weightOfPackage + dimensionOfPackage) * 2;
+
+  return response.status(200).send({ price: price });
 });
 
 app.post("/contactForm", (req, response) => {
