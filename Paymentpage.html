@@ -39,6 +39,7 @@
     <div class="row mt-5">
       <div class="col-md-12">
         <h1>Payment</h1>
+        <h5>Your total: <span id="total"></span>$</h5>
       </div>
     </div>
 
@@ -90,6 +91,7 @@
   });
 </script>
 <script>
+
   function obtainCookie(name) {
     // Add the = sign
     name = name + "=";
@@ -113,8 +115,14 @@
     }
   }
 
+  const urlParams = new URLSearchParams(document.location.search);
+  const price = urlParams.get("price") ? urlParams.get("price"): 10;
+  document.getElementById("total").innerHTML = price;
+
   document.getElementById("submit-button").addEventListener("click", () => {
     const tokenId = obtainCookie("tokenId");
+    const urlParams = new URLSearchParams(document.location.search);
+    const price = urlParams.get("price") ? urlParams.get("price"): 10;
     if (tokenId == null) {
       window.location.href = "Loginpage.html";
     } else {
@@ -132,7 +140,7 @@
         body: JSON.stringify({
           idToken: tokenId,
           creditCardInfo: creditCardInfo,
-          requestPrice: 10,
+          requestPrice: price,
         }),
       };
       fetch(url, params)
