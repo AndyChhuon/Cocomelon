@@ -120,7 +120,6 @@
       const password = document.getElementById("password").value;
       const confirmPassword = document.getElementById("confirmPassword").value;
       const accountType = document.getElementById("accountType").value;
-      const name = email;
       console.log(email);
       console.log(password);
       console.log(confirmPassword);
@@ -158,9 +157,7 @@
               },
               body: JSON.stringify({
                 idToken: accessToken,
-                accountType: accountType,
-                name: name,
-                password: password
+                accountType: accountType
               }),
             };
 
