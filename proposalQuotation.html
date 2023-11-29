@@ -52,6 +52,14 @@
       text-align: center;
     }
 
+    h3 {
+    text-align: center;
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 28px;
+}
+
     #origin {
       background-color: #f5f7fa;
     }
@@ -114,11 +122,14 @@
           <label for="weight">Weight</label>
           <input type="text" class="form-control" id="weight" placeholder="Enter weight [kg]">
           <label for="dimensions">Dimensions</label>
-          <input type="text" class="form-control" id="dimensions" placeholder="Height(cm) x Width(cm) x Length(cm)">
+          <input type="text" class="form-control mb-1" id="height" placeholder="Height(cm)">
+          <input type="text" class="form-control mb-1" id="width" placeholder="Width(cm)">
+          <input type="text" class="form-control mb-1" id="length" placeholder="Length(cm)">
         </div>
         <div class="calculate">
           <button type="submit" id="quotaButton" class="calculate-button rounded mt-5">Calculate</button>
         </div>
+        <h3 class="d-none mt-5" id="estPopUp">The estimated price for your package is:  <span id = "estimation"></span>$ </h3>
       </div>
       <div class="col col-lg-4"></div>
     </div>
@@ -142,11 +153,11 @@
     document.getElementById("quotaButton").addEventListener("click", getPrice);
     function getPrice() {
       var weightOfPackage = parseInt(document.getElementById("weight").value)
-      var dimensionOfPackage = parseInt(document.getElementById("dimensions").value)
+      var heightOfPackage = parseInt(document.getElementById("height").value)
+      var widthOfPackage= parseInt(document.getElementById("width").value)
+      var lengthOfPackage= parseInt(document.getElementById("length").value)
       var destinationOfPackage = document.getElementById("destination").value
-      // if destinationOfPackage == 
-      // console.log(weightOfPackage+dimensionOfPackage);
-      // console.log(dimensionOfPackage);
+
       const url = "http://localhost:8080/quotationPrice";
 
       var params = {
@@ -156,7 +167,9 @@
         },
         body: JSON.stringify({
           weightOfPackage: weightOfPackage,
-          dimensionOfPackage: dimensionOfPackage,
+          heightOfPackage: heightOfPackage,
+          widthOfPackage:widthOfPackage,
+          lengthOfPackage:lengthOfPackage,
           destinationOfPackage: destinationOfPackage,
         }),
       };
@@ -164,7 +177,9 @@
         .then((response) => {
           if (response.ok) {
             response.json().then((res) => {
-              customAlert(res.price)
+              document.getElementById("estimation").innerHTML= res.price
+              var element = document.getElementById("estPopUp")
+              element.classList.remove("d-none")
             });
           } else {
             response.text().then((text) => {
