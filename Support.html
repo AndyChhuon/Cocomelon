@@ -286,12 +286,22 @@
         if (tokenId == null) {
           window.location.href = "Loginpage.html";
         } else {
+          const name = document.getElementById("name").value;
+          const order = document.getElementById("order").value;
+          const email = document.getElementById("email").value;
+          const message = document.getElementById("message").value;
+
           // call contact form backend
           const url = "http://localhost:8080/contactForm";
+
           const contactJson = {
             // TODO: get values from form
-            test: "test",
+            name: name,
+            order: order,
+            email: email,
+            message: message,
           };
+          
           var params = {
             method: "POST",
             headers: {
