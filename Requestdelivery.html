@@ -329,7 +329,30 @@
             // Update this to get values from form but keep the same name (locationFrom, locationTo)
             locationFrom: document.getElementById("send_City").value,
             locationTo: document.getElementById("receive_city").value,
+            sendName: document.getElementById("input_Id send_name").value,
+            sendPhone: document.getElementById("input_Id send_phone").value,
+            sendStreetAddress: document.getElementById("input_Id send_add").value,
+            sendAptUnit: document.getElementById("input_Id send_app").value,
+            sendPostalCode: document.getElementById("input_Id send_post").value,
+            sendProvince: document.getElementById("input_Id send_province").value,
+            sendCity: document.getElementById("send_City").value,
+            sendCountry: document.getElementById("input_Id send_country").value,
+            receiveName: document.getElementById("input_Id receive_name").value,
+            receivePhone: document.getElementById("input_Id receive_phone").value,
+            receiveStreetAddress: document.getElementById("input_Id recieve_add").value,
+            receiveAptUnit: document.getElementById("input_Id recieve_app").value,
+            receivePostalCode: document.getElementById("input_Id recieve_post").value,
+            receiveProvince: document.getElementById("input_Id recieve_province").value,
+            receiveCity: document.getElementById("receive_city").value,
+            receiveCountry: document.getElementById("recieve_country").value,
+            packageType: document.getElementById("packageType").value,
+            packageWeight: document.getElementById("packageWeight").value,
+            packageHeight: document.getElementById("packageHeight").value,
+            packageWidth: document.getElementById("packageWidth").value,
+            packageLength: document.getElementById("packageLength").value,
+            packageDescription: document.getElementById("packageDescription").value,
           };
+          
           var params = {
             method: "POST",
             headers: {
