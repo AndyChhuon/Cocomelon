@@ -11,6 +11,41 @@
   <link rel="icon" href="navbar.png" type="image/x-icon">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <style>
+      .custom-alert {
+      display: block;
+      background-color: #000000;
+      border: 1px solid #ebccd1;
+      border-radius: 4px;
+      color: #f5efef;
+      padding: 10px;
+      margin-bottom: 10px;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .custom-alert .close {
+      background-color: #eeeaea;
+      border: none;
+      border-radius: 50%;
+      color: black;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      height: 20px;
+      line-height: 20px;
+      position: absolute;
+      right: 10px;
+      text-align: center;
+      top: 10px;
+      width: 20px;
+    }
+
+    .custom-alert .close:hover {
+      background-color: #f5f0f0;
+    }
+
     .go-back-button {
       font-size: 14px;
       padding: 10px;
@@ -45,28 +80,28 @@
 
     <div class="row mt-5">
       <div class="col-md-12">
-        <form>
+        <form action="" onsubmit="return verify()">
           <div class="form-group">
             <label for="cardNumber">Card Number</label>
-            <input type="text" class="form-control" id="cardNumber" required>
+            <input type="number" class="form-control" id="cardNumber" >
           </div>
 
           <div class="form-group">
             <label for="cardHolderName">Card Holder Name</label>
-            <input type="text" class="form-control" id="cardHolderName" required>
+            <input type="text" class="form-control" id="cardHolderName" >
           </div>
 
           <div class="form-group">
             <label for="expiryDate">Expiry Date</label>
-            <input type="text" class="form-control" id="expiryDate" required>
+            <input type="text" placeholder="MMYY" class="form-control" id="expiryDate" >
           </div>
 
           <div class="form-group">
             <label for="cvv">CVV</label>
-            <input type="text" class="form-control" id="cvv" required>
+            <input type="number" class="form-control" id="cvv" >
           </div>
 
-          <button type="submit" class="btn btn-primary" id="submit-button">Submit</button>
+          <button type="submit" class="submit-button" id="submit-button">Submit</button>
         </form>
       </div>
     </div>
@@ -91,6 +126,46 @@
   });
 </script>
 <script>
+  function verify() {
+    var cardNum = document.getElementById("cardNumber").value;
+    if (cardNum.length != 4 ) {
+      customAlert("Please Enter a Valid Card Number!");
+      return false;
+    }
+    var chn = document.getElementById("cardHolderName").value;
+    if (chn === "") {
+      customAlert("Please Enter the Card Holder Name");
+      return false;
+    }
+    var expiryDate = document.getElementById("expiryDate").value;
+    var month = parseInt(expiryDate.substring(0,2),10);
+    var year = "20"+ parseInt(expiryDate.substring(2), 10);
+    var c= 2023;
+    if (month <1 || month > 12 || year > (c+10) || year < c || expiryDate.length != 4) {
+      customAlert("Please Enter a Valid Expiry Date.");
+      return false;
+    }
+    var cvv = document.getElementById("cvv").value;
+    if (cvv.length != 3) {
+      customAlert("Please Enter a Valid CVV Number!");
+      return false;
+    }
+    return true;
+  }
+
+  function customAlert(message) {
+
+    var customAlert = document.createElement("div");
+    customAlert.className = "custom-alert";
+    customAlert.innerHTML = "<strong>" + "SKIP THE COURIER" + "</strong>: " + '<button class="close">&times;</button>' + "<br/>" + message;
+
+    var closeButton = customAlert.querySelector(".close");
+    closeButton.addEventListener("click", function () {
+      customAlert.remove();
+    });
+
+    document.body.appendChild(customAlert);
+  }
 
   function obtainCookie(name) {
     // Add the = sign
@@ -115,11 +190,11 @@
     }
   }
 
-  const urlParams = new URLSearchParams(document.location.search);
-  const price = urlParams.get("price") ? urlParams.get("price"): 10;
-  document.getElementById("total").innerHTML = price;
+  //const urlParams = new URLSearchParams(document.location.search);
+  //const price = urlParams.get("price") ? urlParams.get("price"): 10;
+  //document.getElementById("total").innerHTML = price;
 
-  document.getElementById("submit-button").addEventListener("click", () => {
+
     const tokenId = obtainCookie("tokenId");
     const urlParams = new URLSearchParams(document.location.search);
     const price = urlParams.get("price") ? urlParams.get("price"): 10;
@@ -130,7 +205,10 @@
       const url = "http://localhost:8080/creditCardPayment";
       const creditCardInfo = {
         // TODO: get values from form
-        test:"test"
+        cardNum : document.getElementById("cardNumber").value,
+        cardHolder: document.getElementById("cardHolderName").value,
+        expiryDate: document.getElementById("expiryDate").value,
+        cvv: document.getElementById("cvv").value,
       };
       var params = {
         method: "POST",
@@ -162,7 +240,6 @@
           console.error("Error:", error);
         });
     }
-  });
 </script>
 
 </body>
