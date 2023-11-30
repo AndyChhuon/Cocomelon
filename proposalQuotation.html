@@ -13,9 +13,52 @@
   <link rel="stylesheet" type="text/css" href="constants.css">
 
   <style>
+    .custom-alert {
+      display: block;
+      background-color: #000000;
+      border: 1px solid #ebccd1;
+      border-radius: 4px;
+      color: #f5efef;
+      padding: 10px;
+      margin-bottom: 10px;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .custom-alert .close {
+      background-color: #eeeaea;
+      border: none;
+      border-radius: 50%;
+      color: black;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      height: 20px;
+      line-height: 20px;
+      position: absolute;
+      right: 10px;
+      text-align: center;
+      top: 10px;
+      width: 20px;
+    }
+
+    .custom-alert .close:hover {
+      background-color: #f5f0f0;
+    }
+
     h1 {
       text-align: center;
     }
+
+    h3 {
+    text-align: center;
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 28px;
+}
 
     #origin {
       background-color: #f5f7fa;
@@ -68,22 +111,25 @@
       <div class="col-md-auto">
 
 
-          <div class="form-group body-regular-2">
-            <h2>Origin and Destination</h2>
-            <label for="origin">Origin</label>
-            <input type="text" class="form-control" id="origin" placeholder="Enter Package Origin">
-            <label for="destination">Destination</label>
-            <input type="text" class="form-control" id="destination" placeholder="Enter Package Destination">
-            <br><br>
-            <h2>Package Dimensions</h2>
-            <label for="weight">Weight</label>
-            <input type="text" class="form-control" id="weight" placeholder="Enter weight [kg]">
-            <label for="dimensions">Dimensions</label>
-            <input type="text" class="form-control" id="dimensions" placeholder="Height(cm) x Width(cm) x Length(cm)">
-          </div>
-          <div class="calculate">
-            <button type="submit" id="quotaButton" class="calculate-button rounded mt-5">Calculate</button>
-          </div>
+        <div class="form-group body-regular-2">
+          <h2>Origin and Destination</h2>
+          <label for="origin">Origin</label>
+          <input type="text" class="form-control" id="origin" placeholder="Enter Package Origin">
+          <label for="destination">Destination</label>
+          <input type="text" class="form-control" id="destination" placeholder="Enter Package Destination">
+          <br><br>
+          <h2>Package Dimensions</h2>
+          <label for="weight">Weight</label>
+          <input type="text" class="form-control" id="weight" placeholder="Enter weight [kg]">
+          <label for="dimensions">Dimensions</label>
+          <input type="text" class="form-control mb-1" id="height" placeholder="Height(cm)">
+          <input type="text" class="form-control mb-1" id="width" placeholder="Width(cm)">
+          <input type="text" class="form-control mb-1" id="length" placeholder="Length(cm)">
+        </div>
+        <div class="calculate">
+          <button type="submit" id="quotaButton" class="calculate-button rounded mt-5">Calculate</button>
+        </div>
+        <h3 class="d-none mt-5" id="estPopUp">The estimated price for your package is:  <span id = "estimation"></span>$ </h3>
       </div>
       <div class="col col-lg-4"></div>
     </div>
@@ -104,44 +150,60 @@
     });
   </script>
   <script>
-    document.getElementById("quotaButton").addEventListener("click",getPrice);
-    function getPrice(){
+    document.getElementById("quotaButton").addEventListener("click", getPrice);
+    function getPrice() {
       var weightOfPackage = parseInt(document.getElementById("weight").value)
-      var dimensionOfPackage = parseInt(document.getElementById("dimensions").value) 
+      var heightOfPackage = parseInt(document.getElementById("height").value)
+      var widthOfPackage= parseInt(document.getElementById("width").value)
+      var lengthOfPackage= parseInt(document.getElementById("length").value)
       var destinationOfPackage = document.getElementById("destination").value
-      // if destinationOfPackage == 
-      // console.log(weightOfPackage+dimensionOfPackage);
-      // console.log(dimensionOfPackage);
+
       const url = "http://localhost:8080/quotationPrice";
 
       var params = {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-            weightOfPackage : weightOfPackage,
-            dimensionOfPackage : dimensionOfPackage,
-            destinationOfPackage :destinationOfPackage,
-            }),
-          };
-          fetch(url, params)
-            .then((response) => {
-              if (response.ok) {
-                response.json().then((res) => {
-                  alert(res.price)
-                });
-              } else {
-                response.text().then((text) => {
-                  alert(text);
-                });
-              }
-            })
-            .catch((error) => {
-              // Handle errors here
-              alert(error);
-              console.error("Error:", error);
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          weightOfPackage: weightOfPackage,
+          heightOfPackage: heightOfPackage,
+          widthOfPackage:widthOfPackage,
+          lengthOfPackage:lengthOfPackage,
+          destinationOfPackage: destinationOfPackage,
+        }),
+      };
+      fetch(url, params)
+        .then((response) => {
+          if (response.ok) {
+            response.json().then((res) => {
+              document.getElementById("estimation").innerHTML= res.price
+              var element = document.getElementById("estPopUp")
+              element.classList.remove("d-none")
             });
+          } else {
+            response.text().then((text) => {
+              customAlert(text);
+            });
+          }
+        })
+        .catch((error) => {
+          // Handle errors here
+          customAlert(error);
+          console.error("Error:", error);
+        });
+    }
+    function customAlert(message) {
+      var customAlert = document.createElement("div");
+      customAlert.className = "custom-alert";
+      customAlert.innerHTML = "<strong>" + "SKIP THE COURIER" + "</strong>: " + '<button class="close">&times;</button>' + "<br/>" + message;
+
+      var closeButton = customAlert.querySelector(".close");
+      closeButton.addEventListener("click", function () {
+        customAlert.remove();
+      });
+
+      document.body.appendChild(customAlert);
     }
   </script>
 </body>

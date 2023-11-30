@@ -1,315 +1,334 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SKIP THE COURIER</title>
 
-    <link href="css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="icon" href="navbar.png" type="image/x-icon" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
-    />
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-      }
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SKIP THE COURIER</title>
 
-      #input_Id {
-        background-color: #f5f7fa;
-      }
+  <link href="css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="icon" href="navbar.png" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+  <style>
+    .custom-alert {
+      display: block;
+      background-color: #000000;
+      border: 1px solid #ebccd1;
+      border-radius: 4px;
+      color: #f5efef;
+      padding: 10px;
+      margin-bottom: 10px;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
 
-      #packageType {
-        background-color: #f5f7fa;
-      }
+    .custom-alert .close {
+      background-color: #eeeaea;
+      border: none;
+      border-radius: 50%;
+      color: black;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      height: 20px;
+      line-height: 20px;
+      position: absolute;
+      right: 10px;
+      text-align: center;
+      top: 10px;
+      width: 20px;
+    }
 
-      #packageWeight {
-        background-color: #f5f7fa;
-      }
+    .custom-alert .close:hover {
+      background-color: #f5f0f0;
+    }
 
-      #packageDescription {
-        background-color: #f5f7fa;
-      }
+    body {
+      font-family: Arial, sans-serif;
+    }
 
-      .hr_tag {
-        height: 4px;
-        background-color: green;
-        border: none;
-      }
+    #input_Id {
+      background-color: #f5f7fa;
+    }
 
-      .header {
-        padding: 10px;
-        text-align: center;
-      }
+    #packageType {
+      background-color: #f5f7fa;
+    }
 
-      .form-group {
-        margin-bottom: 20px;
-      }
+    #packageWeight {
+      background-color: #f5f7fa;
+    }
+    .color_dimensions {
+      background-color: #f5f7fa !important;
+      margin-bottom: 10px !important;
+    }
 
-      .submit-button {
-        padding: 10px 20px;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-        font-size: 16px;
-        background-color: #28cb8b;
-      }
+    #packageDescription {
+      background-color: #f5f7fa;
+    }
 
-      .submit-button:hover {
-        background-color: #81c784;
-      }
-    </style>
-  </head>
+    .hr_tag {
+      height: 4px;
+      background-color: green;
+      border: none;
+    }
 
-  <body>
-    <!-- Header -->
-    <div id="header"></div>
+    .header {
+      padding: 10px;
+      text-align: center;
+    }
 
-    <div class="header">
-      <h1>Request for Delivery</h1>
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .submit-button {
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      background-color: #28cb8b;
+    }
+
+    .submit-button:hover {
+      background-color: #81c784;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <div id="header"></div>
+
+  <div class="header">
+    <h1>Request for Delivery</h1>
+  </div>
+
+  <div class="container">
+    <div class="form-group">
+      <label for="senderName">Sender Information</label>
+      <input type="text" placeholder="First Name" class="form-control" id="input_Id send_name" required /><br />
+      <input type="text" placeholder="Phone Number" class="form-control" id="input_Id send_phone" required /><br />
+
+      <label for="senderName">Sender Address</label>
+      <input type="text" placeholder="Street Address" class="form-control" id="input_Id send_add" required /><br />
+      <input type="text" placeholder="Apt/Unit" class="form-control" id="input_Id send_app" required /><br />
+      <input type="text" placeholder="Postal Code" class="form-control" id="input_Id send_post" required /><br />
+      <select type="text" placeholder="Province" class="form-control" id="input_Id send_province" required>
+        <br />
+        <option value="Province">Province</option>
+        <option value="Alberta">Alberta</option>
+        <option value="British Columbia">British Columbia</option>
+        <option value="Manitoba">Manitoba</option>
+        <option value="New Brunswick">New Brunswick</option>
+        <option value="Newfoundland and Labrador">
+          Newfoundland and Labrador
+        </option>
+        <option value="Nova Scotia">Nova Scotia</option>
+        <option value="Ontario">Ontario</option>
+        <option value="Prince Edward Island">Prince Edward Island</option>
+        <option value="Quebec">Quebec</option>
+        <option value="Saskatchewan">Saskatchewan</option>
+      </select>
+      <br />
+      <input type="text" placeholder="City" class="form-control" id="send_City" required /><br />
+      <input type="text" placeholder="Country" class="form-control" id="input_Id send_country" required /><br />
     </div>
 
-    <div class="container">
-      <div class="form-group">
-        <label for="senderName">Sender Information</label>
-        <input
-          type="text"
-          placeholder="First Name"
-          class="form-control"
-          id="input_Id"
-          required
-        /><br />
-        <input
-          type="text"
-          placeholder="Phone Number"
-          class="form-control"
-          id="input_Id"
-          required
-        /><br />
+    <h1 class="text-center">Receiver Details</h1>
 
-        <label for="senderName">Sender Address</label>
-        <input
-          type="text"
-          placeholder="Street Address"
-          class="form-control"
-          id="input_Id"
-          required
-        /><br />
-        <input
-          type="text"
-          placeholder="Apt/Unit"
-          class="form-control"
-          id="input_Id"
-          required
-        /><br />
-        <input
-          type="text"
-          placeholder="Postal Code"
-          class="form-control"
-          id="input_Id"
-          required
-        /><br />
-        <select
-          type="text"
-          placeholder="Province"
-          class="form-control"
-          id="input_Id"
-          required
-        >
-          <br />
-          <option value="Province">Province</option>
-          <option value="Alberta">Alberta</option>
-          <option value="British Columbia">British Columbia</option>
-          <option value="Manitoba">Manitoba</option>
-          <option value="New Brunswick">New Brunswick</option>
-          <option value="Newfoundland and Labrador">
-            Newfoundland and Labrador
-          </option>
-          <option value="Nova Scotia">Nova Scotia</option>
-          <option value="Ontario">Ontario</option>
-          <option value="Prince Edward Island">Prince Edward Island</option>
-          <option value="Quebec">Quebec</option>
-          <option value="Saskatchewan">Saskatchewan</option>
-        </select>
+    <div class="form-group">
+      <label for="senderName">Receiver Information</label>
+      <input type="text" placeholder="First Name" class="form-control" id="input_Id receive_name" required /><br />
+      <input type="text" placeholder="Phone Number" class="form-control" id="input_Id receive_phone" required /><br />
+
+      <label for="senderName">Receiver Address</label>
+      <input type="text" placeholder="Street Address" class="form-control" id="input_Id recieve_add" required /><br />
+      <input type="text" placeholder="Apt/Unit" class="form-control" id="input_Id recieve_app" required /><br />
+      <input type="text" placeholder="Postal Code" class="form-control" id="input_Id recieve_post" required /><br />
+      <select type="text" placeholder="Province" class="form-control" id="input_Id recieve_province" required>
         <br />
-        <input
-          type="text"
-          placeholder="City"
-          class="form-control"
-          id="input_Id"
-          required
-        /><br />
-        <input
-          type="text"
-          placeholder="Country"
-          class="form-control"
-          id="input_Id"
-          required
-        /><br />
-      </div>
-
-      <h1 class="text-center">Receiver Details</h1>
-
-      <div class="form-group">
-        <label for="senderName">Receiver Information</label>
-        <input
-          type="text"
-          placeholder="First Name"
-          class="form-control"
-          id="input_Id"
-          required
-        /><br />
-        <input
-          type="text"
-          placeholder="Phone Number"
-          class="form-control"
-          id="input_Id"
-          required
-        /><br />
-
-        <label for="senderName">Receiver Address</label>
-        <input
-          type="text"
-          placeholder="Street Address"
-          class="form-control"
-          id="input_Id"
-          required
-        /><br />
-        <input
-          type="text"
-          placeholder="Apt/Unit"
-          class="form-control"
-          id="input_Id"
-          required
-        /><br />
-        <input
-          type="text"
-          placeholder="Postal Code"
-          class="form-control"
-          id="input_Id"
-          required
-        /><br />
-        <select
-          type="text"
-          placeholder="Province"
-          class="form-control"
-          id="input_Id"
-          required
-        >
-          <br />
-          <option value="Province">Province</option>
-          <option value="Alberta">Alberta</option>
-          <option value="British Columbia">British Columbia</option>
-          <option value="Manitoba">Manitoba</option>
-          <option value="New Brunswick">New Brunswick</option>
-          <option value="Newfoundland and Labrador">
-            Newfoundland and Labrador
-          </option>
-          <option value="Nova Scotia">Nova Scotia</option>
-          <option value="Ontario">Ontario</option>
-          <option value="Prince Edward Island">Prince Edward Island</option>
-          <option value="Quebec">Quebec</option>
-          <option value="Saskatchewan">Saskatchewan</option>
-        </select>
-        <br />
-        <input
-          type="text"
-          placeholder="City"
-          class="form-control"
-          id="input_Id"
-          required
-        /><br />
-        <input
-          type="text"
-          placeholder="Country"
-          class="form-control"
-          id="input_Id"
-          required
-        /><br />
-      </div>
-
-      <h1 class="text-center">Package Information</h1>
-
-      <div class="form-group">
-        <label for="packageType">Package Type</label>
-        <select class="form-control" id="packageType" required>
-          <option value="document">Type</option>
-          <option value="parcel">Parcel</option>
-          <option value="envelope">Envelope</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="packageWeight">Package Weight (in kg)</label>
-        <input type="number" class="form-control" id="packageWeight" required />
-      </div>
-
-      <div class="form-group">
-        <label for="packageDescription">Package Description</label>
-        <textarea
-          class="form-control"
-          id="packageDescription"
-          rows="3"
-          required
-        ></textarea>
-      </div>
-
-      <button type="submit" class="submit-button" id="submit-button">
-        Submit
-      </button>
+        <option value="Province">Province</option>
+        <option value="Alberta">Alberta</option>
+        <option value="British Columbia">British Columbia</option>
+        <option value="Manitoba">Manitoba</option>
+        <option value="New Brunswick">New Brunswick</option>
+        <option value="Newfoundland and Labrador">
+          Newfoundland and Labrador
+        </option>
+        <option value="Nova Scotia">Nova Scotia</option>
+        <option value="Ontario">Ontario</option>
+        <option value="Prince Edward Island">Prince Edward Island</option>
+        <option value="Quebec">Quebec</option>
+        <option value="Saskatchewan">Saskatchewan</option>
+      </select>
+      <br />
+      <input type="text" placeholder="City" class="form-control" id="receive_city" required /><br />
+      <input type="text" placeholder="Country" class="form-control" id="recieve_country" required /><br />
     </div>
 
-    <!--- Footer -->
-    <div id="footer"></div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-      $(function () {
-        $("#header").load("index.html");
-      });
-    </script>
-    <script>
-      $(function () {
-        $("#footer").load("footer.html");
-      });
-    </script>
-    <script>
-      function obtainCookie(name) {
-        // Add the = sign
-        name = name + "=";
+    <h1 class="text-center">Package Information</h1>
 
-        // Get the decoded cookie
-        var decodedCookie = decodeURIComponent(document.cookie);
+    <div class="form-group">
+      <label for="packageType">Package Type</label>
+      <select class="form-control" id="packageType" required>
+        <option value="document">Type</option>
+        <option value="parcel">Parcel</option>
+        <option value="envelope">Envelope</option>
+      </select>
+    </div>
 
-        // Get all cookies, split on ; sign
-        var cookies = decodedCookie.split(";");
+    <div class="form-group">
+      <label for="packageWeight">Package Weight (in kg)</label>
+      <input type="number" class="form-control" id="packageWeight" required />
+    </div>
+    <div class="form-group">
+      <label for="packageDimensions">Package Dimensions</label>
+      <input type="number" class="form-control color_dimensions" id="packageHeight" required placeholder="Height(cm)" />
+      <input type="number" class="form-control color_dimensions" id="packageWidth" required placeholder="Width(cm)"/>
+      <input type="number" class="form-control color_dimensions" id="packageLength" required placeholder="Length(cm)" />
 
-        // Loop over the cookies
-        for (var i = 0; i < cookies.length; i++) {
-          // Define the single cookie, and remove whitespace
-          var cookie = cookies[i].trim();
+    </div>
 
-          // If this cookie has the name of what we are searching
-          if (cookie.indexOf(name) == 0) {
-            // Return everything after the cookies name
-            return cookie.substring(name.length, cookie.length);
-          }
+    <div class="form-group">
+      <label for="packageDescription">Package Description</label>
+      <textarea class="form-control" id="packageDescription" rows="3" required></textarea>
+    </div>
+
+    <button onclick="verify()" type="submit" class="submit-button" id="submit-button">
+      Submit
+    </button>
+  </div>
+
+  <!--- Footer -->
+  <div id="footer"></div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(function () {
+      $("#header").load("index.html");
+    });
+  </script>
+  <script>
+    $(function () {
+      $("#footer").load("footer.html");
+    });
+  </script>
+  <script>
+    function verify() {
+      var input_fields = document.getElementsByTagName("input");
+      for (var i = 0; i < input_fields.length; i++) {
+        if (input_fields[i].value === "") {
+          customAlert("Please complete all the fields!");
+          return false;
         }
       }
+      var select_fields = document.getElementsByTagName("select");
+      for (var i = 0; i < select_fields.length; i++) {
+        if (select_fields[i].value === "Province") {
+          customAlert("Please select a province.");
+          return false;
+        }
+      }
+      var textarea_fields = document.getElementsByTagName("textarea");
+      for (var i = 0; i < textarea_fields.length; i++) {
+        if (textarea_fields[i].value === "") {
+          customAlert("Please enter a package description.");
+          return false;
+        }
+      }
+      return true;
+    }
 
-      document.getElementById("submit-button").addEventListener("click", () => {
-        const tokenId = obtainCookie("tokenId");
-        if (tokenId == null) {
-          window.location.href = "Loginpage.html";
-        } else {
+    function getPrice() {
+      var weightOfPackage = parseInt(document.getElementById("packageWeight").value)
+      var heightOfPackage = parseInt(document.getElementById("packageHeight").value)
+      var widthOfPackage= parseInt(document.getElementById("packageWidth").value)
+      var lengthOfPackage= parseInt(document.getElementById("packageLength").value)
+      var destinationOfPackage = document.getElementById("recieve_country").value
+
+      const url = "http://localhost:8080/quotationPrice";
+
+      var params = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          weightOfPackage: weightOfPackage,
+          heightOfPackage: heightOfPackage,
+          widthOfPackage:widthOfPackage,
+          lengthOfPackage:lengthOfPackage,
+          destinationOfPackage: destinationOfPackage,
+        }),
+      };
+      fetch(url, params)
+        .then((response) => {
+          if (response.ok) {
+            response.json().then((res) => {
+              const price = res.price;
+              window.location.href ="Paymentpage.html?price="+price;
+            });
+          } else {
+            response.text().then((text) => {
+              customAlert(text);
+            });
+          }
+        })
+        .catch((error) => {
+          // Handle errors here
+          customAlert(error);
+          console.error("Error:", error);
+        });
+    }
+
+    function getCurrentTimestamp() {
+      var currentDate = new Date();
+      var timestamp = currentDate.getTime();
+      return timestamp;
+    }
+
+    function obtainCookie(name) {
+      // Add the = sign
+      name = name + "=";
+
+      // Get the decoded cookie
+      var decodedCookie = decodeURIComponent(document.cookie);
+
+      // Get all cookies, split on ; sign
+      var cookies = decodedCookie.split(";");
+
+      // Loop over the cookies
+      for (var i = 0; i < cookies.length; i++) {
+        // Define the single cookie, and remove whitespace
+        var cookie = cookies[i].trim();
+
+        // If this cookie has the name of what we are searching
+        if (cookie.indexOf(name) == 0) {
+          // Return everything after the cookies name
+          return cookie.substring(name.length, cookie.length);
+        }
+      }
+    }
+
+    document.getElementById("submit-button").addEventListener("click", () => {
+      const tokenId = obtainCookie("tokenId");
+      if (tokenId == null) {
+        window.location.href = "Loginpage.html";
+      } else {
+        if (verify()) {
+
+          const times = getCurrentTimestamp();
           // call request delivery backend
           const url = "http://localhost:8080/requestForDelivery";
           const requestJson = {
             // Update this to get values from form but keep the same name (locationFrom, locationTo)
-            locationFrom: "Toronto",
-            locationTo: "Montreal",
-            // TODO: get values from form
+            locationFrom: document.getElementById("send_City").value,
+            locationTo: document.getElementById("receive_city").value,
           };
           var params = {
             method: "POST",
@@ -326,7 +345,7 @@
               if (response.ok) {
                 response.json().then((res) => {
                   // Redirect to payment page
-                  window.location.href = "Paymentpage.html";
+                  getPrice()
                 });
               } else {
                 response.text().then((text) => {
@@ -340,7 +359,22 @@
               console.error("Error:", error);
             });
         }
+      }
+    });
+
+    function customAlert(message) {
+      var customAlert = document.createElement("div");
+      customAlert.className = "custom-alert";
+      customAlert.innerHTML = "<strong>" + "SKIP THE COURIER" + "</strong>: " + '<button class="close">&times;</button>' + "<br/>" + message;
+
+      var closeButton = customAlert.querySelector(".close");
+      closeButton.addEventListener("click", function () {
+        customAlert.remove();
       });
-    </script>
-  </body>
+
+      document.body.appendChild(customAlert);
+    }
+  </script>
+</body>
+
 </html>

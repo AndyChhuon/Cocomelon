@@ -550,8 +550,16 @@ app.post("/quotationPrice", (req, response) => {
     response.status(400).send("No weight of package provided");
     return;
   }
-  if (!req.body.dimensionOfPackage) {
-    response.status(400).send("No dimension of package provided");
+  if (!req.body.heightOfPackage) {
+    response.status(400).send("No heigth of package provided");
+    return;
+  }
+  if (!req.body.widthOfPackage) {
+    response.status(400).send("No width of package provided");
+    return;
+  }
+  if (!req.body.lengthOfPackage) {
+    response.status(400).send("No length of package provided");
     return;
   }
   if (!req.body.destinationOfPackage) {
@@ -559,12 +567,16 @@ app.post("/quotationPrice", (req, response) => {
     return;
   }
   var weightOfPackage = parseInt(req.body.weightOfPackage);
-  var dimensionOfPackage = parseInt(req.body.dimensionOfPackage);
+  var heightOfPackage = parseInt(req.body.heightOfPackage);
+  var widthOfPackage = parseInt(req.body.widthOfPackage);
+  var lengthOfPackage = parseInt(req.body.lengthOfPackage);
   var destinationOfPackage = req.body.destinationOfPackage;
   var price;
+  var dimensions;
+  dimensions = heightOfPackage*widthOfPackage*lengthOfPackage
   if (destinationOfPackage.toLowerCase() == "canada")
-    price = weightOfPackage + dimensionOfPackage;
-  else price = (weightOfPackage + dimensionOfPackage) * 2;
+    price = weightOfPackage + dimensions;
+  else price = (weightOfPackage + dimensions) * 2;
 
   return response.status(200).send({ price: price });
 });
