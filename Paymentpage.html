@@ -45,6 +45,40 @@
     .custom-alert .close:hover {
       background-color: #f5f0f0;
     }
+    .custom-alert2 {
+      display: block;
+      background-color: #000000;
+      border: 1px solid #ebccd1;
+      border-radius: 4px;
+      color: #f5efef;
+      padding: 10px;
+      margin-bottom: 10px;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .custom-alert2 .close {
+      background-color: #eeeaea;
+      border: none;
+      border-radius: 50%;
+      color: black;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      height: 20px;
+      line-height: 20px;
+      position: absolute;
+      right: 10px;
+      text-align: center;
+      top: 10px;
+      width: 20px;
+    }
+
+    .custom-alert2 .close:hover {
+      background-color: #f5f0f0;
+    }
 
     .go-back-button {
       font-size: 14px;
@@ -80,24 +114,24 @@
 
     <div class="row mt-5">
       <div class="col-md-12">
-        <form action="" onsubmit="return verify()">
+        <form action="" onsubmit="return submitFormHandler()">
           <div class="form-group">
-            <label for="cardNumber">Card Number</label>
+            <label for="cardNumber">Card Number*</label>
             <input type="number" class="form-control" id="cardNumber" >
           </div>
 
           <div class="form-group">
-            <label for="cardHolderName">Card Holder Name</label>
+            <label for="cardHolderName">Card Holder Name*</label>
             <input type="text" class="form-control" id="cardHolderName" >
           </div>
 
           <div class="form-group">
-            <label for="expiryDate">Expiry Date</label>
-            <input type="text" placeholder="MMYY" class="form-control" id="expiryDate" >
+            <label for="expiryDate">Expiry Date*</label>
+            <input type="number" placeholder="MMYY" class="form-control" id="expiryDate" >
           </div>
 
           <div class="form-group">
-            <label for="cvv">CVV</label>
+            <label for="cvv">CVV*</label>
             <input type="number" class="form-control" id="cvv" >
           </div>
 
@@ -126,6 +160,9 @@
   });
 </script>
 <script>
+  const urlParams = new URLSearchParams(document.location.search);
+  const price = urlParams.get("price") ? urlParams.get("price"): 10;
+  document.getElementById("total").innerHTML = price;
   function verify() {
     var cardNum = document.getElementById("cardNumber").value;
     if (cardNum.length != 4 ) {
@@ -153,18 +190,56 @@
     return true;
   }
 
-  function customAlert(message) {
-
-    var customAlert = document.createElement("div");
-    customAlert.className = "custom-alert";
-    customAlert.innerHTML = "<strong>" + "SKIP THE COURIER" + "</strong>: " + '<button class="close">&times;</button>' + "<br/>" + message;
-
-    var closeButton = customAlert.querySelector(".close");
-    closeButton.addEventListener("click", function () {
-      customAlert.remove();
-    });
-
-    document.body.appendChild(customAlert);
+  function submitFormHandler(){
+    if (verify()){
+      const tokenId = obtainCookie("tokenId");
+      const urlParams = new URLSearchParams(document.location.search);
+      const price = urlParams.get("price") ? urlParams.get("price"): 10;
+      if (tokenId == null) {
+        window.location.href = "Loginpage.html";
+      } else {
+        // call request delivery backend
+        const url = "http://localhost:8080/creditCardPayment";
+        const creditCardInfo = {
+          // TODO: get values from form
+          cardNum : document.getElementById("cardNumber").value,
+          cardHolder: document.getElementById("cardHolderName").value,
+          expiryDate: document.getElementById("expiryDate").value,
+          cvv: document.getElementById("cvv").value,
+        };
+        var params = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            idToken: tokenId,
+            creditCardInfo: creditCardInfo,
+            requestPrice: price,
+          }),
+        };
+        fetch(url, params)
+          .then((response) => {
+            if (response.ok) {
+              response.json().then((res) => {
+                // Redirect to payment page
+                //customAlert2("Payment successful");
+                window.location.href = "paymentSuccessful.html";
+              });
+            } else {
+              response.text().then((text) => {
+                alert(text);
+              });
+            }
+          })
+          .catch((error) => {
+            // Handle errors here
+            alert(error);
+            console.error("Error:", error);
+          });
+      }
+    }
+    return false;
   }
 
   function obtainCookie(name) {
@@ -190,56 +265,30 @@
     }
   }
 
-  //const urlParams = new URLSearchParams(document.location.search);
-  //const price = urlParams.get("price") ? urlParams.get("price"): 10;
-  //document.getElementById("total").innerHTML = price;
+  function customAlert(message) {
+    var customAlert = document.createElement("div");
+    customAlert.className = "custom-alert";
+    customAlert.innerHTML = "<strong>" + "SKIP THE COURIER" + "</strong>: " + '<button class="close">&times;</button>' + "<br/>" + message;
 
+    var closeButton = customAlert.querySelector(".close");
+    closeButton.addEventListener("click", function () {
+      customAlert.remove();
+    });
+    document.body.appendChild(customAlert);
+  }
 
-    const tokenId = obtainCookie("tokenId");
-    const urlParams = new URLSearchParams(document.location.search);
-    const price = urlParams.get("price") ? urlParams.get("price"): 10;
-    if (tokenId == null) {
-      window.location.href = "Loginpage.html";
-    } else {
-      // call request delivery backend
-      const url = "http://localhost:8080/creditCardPayment";
-      const creditCardInfo = {
-        // TODO: get values from form
-        cardNum : document.getElementById("cardNumber").value,
-        cardHolder: document.getElementById("cardHolderName").value,
-        expiryDate: document.getElementById("expiryDate").value,
-        cvv: document.getElementById("cvv").value,
-      };
-      var params = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          idToken: tokenId,
-          creditCardInfo: creditCardInfo,
-          requestPrice: price,
-        }),
-      };
-      fetch(url, params)
-        .then((response) => {
-          if (response.ok) {
-            response.json().then((res) => {
-              // Redirect to payment page
-              alert("Payment successful");
-            });
-          } else {
-            response.text().then((text) => {
-              alert(text);
-            });
-          }
-        })
-        .catch((error) => {
-          // Handle errors here
-          alert(error);
-          console.error("Error:", error);
-        });
-    }
+  function customAlert2(message) {
+    var customAlert = document.createElement("div");
+    customAlert.className = "custom-alert2";
+    customAlert.innerHTML = "<br/>"+"<strong>" + "PAYMENT SUCCESFUL" + "</strong>: " + '<button class="close">&times;</button>' + "<br/>";
+
+    var closeButton = customAlert.querySelector(".close");
+    closeButton.addEventListener("click", function () {
+      customAlert.remove();
+      window.location.href = "home.html"
+    });
+    document.body.appendChild(customAlert);
+  }
 </script>
 
 </body>
