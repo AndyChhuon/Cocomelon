@@ -8,6 +8,20 @@ const app = express();
 app.use(cors());
 const PORT = 8080;
 var admin = require("firebase-admin");
+const path = require("path");
+
+// ObjectOriented utilities
+const SkipTheCourrier = require("./src/controller/SkipTheCourrier");
+const UserCatalog = require("./src/catalogs/UserCatalog");
+const QuotationCatalog = require("./src/catalogs/QuotationCatalog");
+const PackageCatalog = require("./src/catalogs/PackageCatalog");
+const Size = require("./src/models/Size");
+const Weight = require("./src/models/Weight");
+const Package = require("./src/models/Package");
+const Address = require("./src/models/Address");
+
+const skipTheCourrier = SkipTheCourrier.getInstance();
+const userCatalog = UserCatalog.getInstance();
 
 var serviceAccount = {
   type: "service_account",
@@ -36,6 +50,9 @@ app.listen(process.env.PORT || PORT, () => {
 
 app.use(express.json()); // or app.use(bodyParser.json()); for older versions of Express
 
+// Serve static files from the Cocomelon directory
+app.use(express.static(path.join(__dirname, "..", "/")));
+
 function parseJSONOrString(input) {
   if (typeof input === "string") {
     try {
@@ -47,115 +64,54 @@ function parseJSONOrString(input) {
   return input; // Return as-is if it's already a parsed object
 }
 
-// post http://localhost:8080/signUp with body {idToken: <idToken>, accountType: <accountType>}
-app.post("/signUp", (req, response) => {
-  if (!req.body.idToken) {
-    response.status(400).send("No idToken provided");
-    return;
-  }
-
-  if (
-    !req.body.accountType &&
-    req.body.accountType != "deliverer" &&
-    req.body.accountType != "client"
-  ) {
-    response.status(400).send("Invalid account type");
-    return;
-  }
-  const idToken = req.body.idToken;
-  const accountType = req.body.accountType;
-  console.log("inside signUp");
-
-  admin
-    .auth()
-    .verifyIdToken(idToken)
-    .then((decodedToken) => {
-      const userUid = decodedToken.uid;
-      console.log("User id: " + userUid);
-
-      admin
-        .database()
-        .ref(`userValues/${userUid}`)
-        .once("value", (snapshot) => {
-          if (snapshot.exists()) {
-            // User already exists
-            console.log("User already exists");
-            response.status(400).send("User already exists");
-            return;
-          } else {
-            // User does not exist, initialize values
-            console.log("User does not exist, initialize values");
-            admin
-              .database()
-              .ref(`userValues/${userUid}`)
-              .set({
-                accountType: accountType,
-                owedBalance: 0,
-              })
-              .then(() => {
-                response.status(200).send({
-                  message: "User initialized successfully",
-                  userValues: {
-                    accountType: accountType,
-                    owedBalance: 0,
-                  },
-                });
-              });
-          }
-        })
-        .catch((error) => {
-          console.log("Error initializing user: " + error);
-          response.status(400).send("Error initializing user: " + error);
-        });
-    })
-    .catch((error) => {
-      console.log("Error verifying token: " + error);
-      response.status(400).send("Error verifying token: " + error);
-    });
+app.get("/signUp", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "Signup.html"));
 });
 
-app.post("/login", (req, response) => {
-  if (!req.body.idToken) {
-    response.status(400).send("No idToken provided");
-    return;
-  }
-  const idToken = req.body.idToken;
+// post http://localhost:8080/signUp with body {idToken: <idToken>, accountType: <accountType>}
+app.post("/signUp", async (req, res) => {
+  try {
+    const { idToken, accountType } = req.body;
+    if (!idToken || !accountType) {
+      return res.status(400).send("Missing required fields");
+    }
 
-  admin
-    .auth()
-    .verifyIdToken(idToken)
-    .then((decodedToken) => {
-      const userUid = decodedToken.uid;
-      console.log("User id: " + userUid);
-
-      admin
-        .database()
-        .ref(`userValues/${userUid}`)
-        .once("value", (snapshot) => {
-          if (snapshot.exists()) {
-            // User already exists
-            console.log("User exists, return user values");
-            response.status(200).send({
-              message: "User logged in successfully",
-              userValues: snapshot.val(),
-            });
-            return;
-          } else {
-            // User already exists
-            console.log("Use does not exist, please sign up");
-            response.status(400).send("User does not exist, please sign up");
-            return;
-          }
-        })
-        .catch((error) => {
-          console.log("Error initializing user: " + error);
-          response.status(400).send("Error initializing user: " + error);
-        });
-    })
-    .catch((error) => {
-      console.log("Error verifying token: " + error);
-      response.status(400).send("Error verifying token: " + error);
+    const newUser = await userCatalog.addUser(idToken, accountType);
+    res.status(200).send({
+      message: "User signed up successfully",
+      userId: newUser.getID(),
+      accountType: newUser.getType(),
     });
+  } catch (error) {
+    console.error("Sign Up Error:", error.message);
+    res.status(500).send("Error during sign up: " + error.message);
+  }
+});
+
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "Loginpage.html"));
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) {
+      return res.status(400).send("No idToken provided");
+    }
+
+    const userValues = await userCatalog.loginUser(idToken);
+    res.status(200).send({
+      message: "User logged in successfully",
+      userValues: userValues,
+    });
+  } catch (error) {
+    console.error("Login Error:", error.message);
+    res.status(500).send("Error during login: " + error.message);
+  }
+});
+
+app.get("/requestForDelivery", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "Requestdelivery.html"));
 });
 
 app.post("/requestForDelivery", (req, response) => {
