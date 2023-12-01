@@ -45,6 +45,7 @@
     .custom-alert .close:hover {
       background-color: #f5f0f0;
     }
+
     .custom-alert2 {
       display: block;
       background-color: #000000;
@@ -80,14 +81,29 @@
       background-color: #f5f0f0;
     }
 
-    .go-back-button {
-      font-size: 14px;
-      padding: 10px;
-      cursor: pointer;
+    .button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
-    .go-back-button:hover {
-      background-color: #f0f0f0;
+    .button {
+        background-color: #28cb8b;
+        display: flex;
+        text-align: center;
+        text-decoration: none;
+        color: white;
+        padding: 10px 20px;
+        cursor: pointer;
+        border: 1px solid;
+        border-radius: 5px;
+        font-size: 14px;
+        margin: 10px;
+    }
+
+    .button:hover {
+        background-color: #24b67d;
+        color: white;
     }
   </style>
 </head>
@@ -97,18 +113,10 @@
   <div id="header"></div>
 
   <div class="container mt-5">
-    <div class="row">
-      <div class="col-md-12">
-        <a href="javascript:history.back()" class="go-back-button">
-          <span class="oi oi-chevron-left"></span> Go Back
-        </a>
-      </div>
-    </div>
-
     <div class="row mt-5">
       <div class="col-md-12">
-        <h1>Payment</h1>
-        <h5>Your total: <span id="total"></span>$</h5>
+        <h1 style="text-align: center; font-size: 3.5rem;">Make a Payment</h1>
+        <h5 style="text-align: center; font-size: 2rem;">Your total is: <span id="total"></span>$</h5>
       </div>
     </div>
 
@@ -116,7 +124,7 @@
       <div class="col-md-12">
         <form action="" onsubmit="return submitFormHandler()">
           <div class="form-group">
-            <label for="cardNumber">Card Number*</label>
+            <label for="cardNumber">Credit Card Number*</label>
             <input type="number" class="form-control" id="cardNumber" >
           </div>
 
@@ -134,8 +142,9 @@
             <label for="cvv">CVV*</label>
             <input type="number" class="form-control" id="cvv" >
           </div>
-
-          <button type="submit" class="submit-button" id="submit-button">Submit</button>
+          <div class="button-container">
+            <button type="submit" class="button" id="submit-button">Submit</button>
+          </div>
         </form>
       </div>
     </div>
@@ -166,12 +175,12 @@
   function verify() {
     var cardNum = document.getElementById("cardNumber").value;
     if (cardNum.length != 4 ) {
-      customAlert("Please Enter a Valid Card Number!");
+      customAlert("Please Enter a Valid Credit Card Number!");
       return false;
     }
     var chn = document.getElementById("cardHolderName").value;
     if (chn === "") {
-      customAlert("Please Enter the Card Holder Name");
+      customAlert("Please Enter the Card Holder Name!");
       return false;
     }
     var expiryDate = document.getElementById("expiryDate").value;
@@ -179,7 +188,7 @@
     var year = "20"+ parseInt(expiryDate.substring(2), 10);
     var c= 2023;
     if (month <1 || month > 12 || year > (c+10) || year < c || expiryDate.length != 4) {
-      customAlert("Please Enter a Valid Expiry Date.");
+      customAlert("Please Enter a Valid Expiry Date!");
       return false;
     }
     var cvv = document.getElementById("cvv").value;
@@ -200,6 +209,12 @@
       } else {
         // call request delivery backend
         const url = "http://localhost:8080/creditCardPayment";
+        const requestJson = {
+          cardNum : document.getElementById("cardNumber").value,
+          cardHolder: document.getElementById("cardHolderName").value,
+          expiryDate: document.getElementById("expiryDate").value,
+          cvv: document.getElementById("cvv").value,
+        };
         const creditCardInfo = {
           // TODO: get values from form
           cardNum : document.getElementById("cardNumber").value,
@@ -207,6 +222,7 @@
           expiryDate: document.getElementById("expiryDate").value,
           cvv: document.getElementById("cvv").value,
         };
+
         var params = {
           method: "POST",
           headers: {
@@ -214,6 +230,7 @@
           },
           body: JSON.stringify({
             idToken: tokenId,
+            requestJson : requestJson,
             creditCardInfo: creditCardInfo,
             requestPrice: price,
           }),
